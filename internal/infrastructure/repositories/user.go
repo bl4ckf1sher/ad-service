@@ -51,3 +51,11 @@ func (u User) Create(c context.Context, user domain.User) (err error) {
 
 	return
 }
+
+func (u User) Delete(c context.Context, id uuid.UUID) (err error) {
+	res := u.connect.Db.MustExecContext(c, "DELETE FROM users WHERE id=$1", id)
+
+	_, err = res.RowsAffected()
+
+	return
+}
