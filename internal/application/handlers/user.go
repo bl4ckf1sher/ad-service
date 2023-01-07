@@ -146,7 +146,7 @@ func (h UserHandler) DeleteUser(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"code":    http.StatusOK,
-		"message": string("User successfully deleted"),
+		"message": "User successfully deleted",
 	})
 }
 
