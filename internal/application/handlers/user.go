@@ -31,10 +31,37 @@ func (h UserHandler) GetUsers(c *gin.Context) {
 
 // Get user by id
 
+type GetUserByIdRequest struct {
+	Id string `json:"id"`
+}
+
 func (h UserHandler) GetUserById(c *gin.Context) {
 	var user *domain.User
-	id, _ := uuid.Parse("d7c8c289-9e8a-4e1d-9ef3-8d3b17f6437c")
-	user, err := h.userService.GetUserById(c, id)
+	var err error
+	var req []byte
+
+	req, err = io.ReadAll(c.Request.Body)
+	if err != nil {
+		if json.Valid(req) {
+			c.AbortWithError(http.StatusUnprocessableEntity, err)
+		} else {
+			c.AbortWithError(http.StatusBadRequest, err)
+		}
+	}
+
+	var requestedId GetUserByIdRequest
+
+	err = json.Unmarshal(req, &requestedId)
+	if err != nil {
+		panic(err)
+	}
+
+	id, err := uuid.Parse(requestedId.Id)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	user, err = h.userService.GetUserById(c, id)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -43,7 +70,7 @@ func (h UserHandler) GetUserById(c *gin.Context) {
 
 // Create user
 
-type UserRequest struct {
+type CreateUserRequest struct {
 	Role     string `json:"role"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -53,16 +80,20 @@ type UserRequest struct {
 
 func (h UserHandler) CreateUser(c *gin.Context) {
 	var err error
-	var res []byte
+	var req []byte
 
-	res, err = io.ReadAll(c.Request.Body)
+	req, err = io.ReadAll(c.Request.Body)
 	if err != nil {
-		fmt.Println(err)
+		if json.Valid(req) {
+			c.AbortWithError(http.StatusUnprocessableEntity, err)
+		} else {
+			c.AbortWithError(http.StatusBadRequest, err)
+		}
 	}
 
-	var userRequest UserRequest
+	var userRequest CreateUserRequest
 
-	err = json.Unmarshal(res, &userRequest)
+	err = json.Unmarshal(req, &userRequest)
 	if err != nil {
 		panic(err)
 	}
