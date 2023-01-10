@@ -42,7 +42,11 @@ func (h UserHandler) GetUserById(c *gin.Context) {
 
 	req, err = io.ReadAll(c.Request.Body)
 	if err != nil {
-		fmt.Println(err)
+		if json.Valid(req) {
+			c.AbortWithError(http.StatusUnprocessableEntity, err)
+		} else {
+			c.AbortWithError(http.StatusBadRequest, err)
+		}
 	}
 
 	var requestedId GetUserByIdRequest
@@ -80,7 +84,11 @@ func (h UserHandler) CreateUser(c *gin.Context) {
 
 	req, err = io.ReadAll(c.Request.Body)
 	if err != nil {
-		fmt.Println(err)
+		if json.Valid(req) {
+			c.AbortWithError(http.StatusUnprocessableEntity, err)
+		} else {
+			c.AbortWithError(http.StatusBadRequest, err)
+		}
 	}
 
 	var userRequest CreateUserRequest
