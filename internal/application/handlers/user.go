@@ -15,11 +15,27 @@ type UserHandler struct {
 	userService service.User
 }
 
+// REQUEST MODELS
+
+type UserByIdRequest struct {
+	Id string `json:"id"`
+}
+
+type CreateUserRequest struct {
+	Role     string `json:"role"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
+}
+
+// REQUEST MODELS
+
 func NewUsersHandler(service service.User) *UserHandler {
 	return &UserHandler{userService: service}
 }
 
-// Get all users
+// GET ALL USERS
 
 func (h UserHandler) GetUsers(c *gin.Context) {
 	user, err := h.userService.GetUsers(c)
@@ -29,11 +45,9 @@ func (h UserHandler) GetUsers(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
-// Get user by id
+// GET ALL USERS
 
-type GetUserByIdRequest struct {
-	Id string `json:"id"`
-}
+// GET USER BY ID
 
 func (h UserHandler) GetUserById(c *gin.Context) {
 	var user *domain.User
@@ -49,7 +63,7 @@ func (h UserHandler) GetUserById(c *gin.Context) {
 		}
 	}
 
-	var requestedId GetUserByIdRequest
+	var requestedId UserByIdRequest
 
 	err = json.Unmarshal(req, &requestedId)
 	if err != nil {
@@ -68,15 +82,9 @@ func (h UserHandler) GetUserById(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
-// Create user
+// GET USER BY ID
 
-type CreateUserRequest struct {
-	Role     string `json:"role"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-}
+// CREATE USER
 
 func (h UserHandler) CreateUser(c *gin.Context) {
 	var err error
@@ -114,3 +122,40 @@ func (h UserHandler) CreateUser(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusCreated, userRequest)
 }
+
+// CREATE USER
+
+// DELETE USER
+
+func (h UserHandler) DeleteUser(c *gin.Context) {
+	var err error
+	var req []byte
+
+	req, err = io.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var requestedId UserByIdRequest
+
+	err = json.Unmarshal(req, &requestedId)
+	if err != nil {
+		panic(err)
+	}
+
+	id, err := uuid.Parse(requestedId.Id)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = h.userService.DeleteUser(c, id)
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"message": "User successfully deleted",
+	})
+}
+
+// DELETE USER

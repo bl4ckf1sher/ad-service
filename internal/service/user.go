@@ -41,3 +41,12 @@ func (s User) CreateUser(c context.Context, user domain.User) (err error) {
 	err = s.userRepo.Create(c, user)
 	return
 }
+
+func (s User) DeleteUser(c context.Context, id uuid.UUID) (err error) {
+	err = s.userRepo.Delete(c, id)
+	if err != nil {
+		return
+	}
+
+	return nil
+}
