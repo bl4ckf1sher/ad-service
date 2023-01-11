@@ -38,13 +38,27 @@ func (u User) GetAll(c context.Context) (*[]domain.User, error) {
 }
 
 func (u User) Create(c context.Context, user domain.User) (err error) {
-	createUserQuery := "INSERT INTO users (id, role, email, password, name, surname, created_at, updated_at)" +
-		"VALUES ($1, $2, $3, $4, $5, $6, now(), now())"
+	createUserQuery := "INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, now(), now())"
+
 	res := u.connect.Db.MustExecContext(
 		c,
 		createUserQuery,
 		uuid.New(),
 		user.Role, user.Email, user.Password, user.Name, user.Surname,
+	)
+
+	_, err = res.RowsAffected()
+
+	return
+}
+
+func (u User) Update(c context.Context, user domain.User) (err error) {
+	updateUserQuery := "UPDATE users SET (role, email, password, name, surname, updated_at) = " +
+		"($1, $2, $3, $4, $5, now()) WHERE id=$6"
+	res := u.connect.Db.MustExecContext(
+		c,
+		updateUserQuery,
+		user.Role, user.Email, user.Password, user.Name, user.Surname, user.ID,
 	)
 
 	_, err = res.RowsAffected()

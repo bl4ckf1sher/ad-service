@@ -50,3 +50,8 @@ func (s User) DeleteUser(c context.Context, id uuid.UUID) (err error) {
 
 	return nil
 }
+
+func (s User) UpdateUser(c context.Context, user domain.User) (err error) {
+	err = s.userRepo.Update(c, user)
+	return
+}

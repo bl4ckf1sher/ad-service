@@ -38,6 +38,7 @@ func main() {
 	router.GET("/user", UserHandler.GetUserById)
 	router.GET("/users", UserHandler.GetUsers)
 	router.POST("/user", UserHandler.CreateUser)
+	router.PATCH("/user", UserHandler.UpdateUser)
 	router.DELETE("/user", UserHandler.DeleteUser)
 
 	router.Run("localhost:8080")
