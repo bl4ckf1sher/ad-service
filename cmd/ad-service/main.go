@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	viper.SetConfigName("config")
+	viper.SetConfigName("config.local")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -36,8 +36,8 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/user", UserHandler.GetUsers)
+	router.POST("/user", UserHandler.CreateUser)
 	router.GET("/user/:id", UserHandler.GetUserById)
-	router.POST("/user/:id", UserHandler.CreateUser)
 	router.PUT("/user/:id", UserHandler.UpdateUser)
 	router.DELETE("/user/:id", UserHandler.DeleteUser)
 
