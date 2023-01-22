@@ -35,11 +35,11 @@ func main() {
 	UserHandler := handlers.NewUsersHandler(*UserService)
 
 	router := gin.Default()
-	router.GET("/user", UserHandler.GetUserById)
-	router.GET("/users", UserHandler.GetUsers)
-	router.POST("/user", UserHandler.CreateUser)
-	router.PATCH("/user", UserHandler.UpdateUser)
-	router.DELETE("/user", UserHandler.DeleteUser)
+	router.GET("/user", UserHandler.GetUsers)
+	router.GET("/user/:id", UserHandler.GetUserById)
+	router.POST("/user/:id", UserHandler.CreateUser)
+	router.PUT("/user/:id", UserHandler.UpdateUser)
+	router.DELETE("/user/:id", UserHandler.DeleteUser)
 
 	router.Run("localhost:8080")
 }
