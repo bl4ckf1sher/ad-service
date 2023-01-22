@@ -20,20 +20,7 @@ func NewUsersHandler(service service.User) *UserHandler {
 
 // REQUEST MODELS
 
-type UserByIdRequest struct {
-	Id string `json:"id"`
-}
-
-type CreateUserRequest struct {
-	Role     string `json:"role"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
-}
-
-type UpdateUserRequest struct {
-	Id       string `json:"id"`
+type UserRequest struct {
 	Role     string `json:"role"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -72,14 +59,7 @@ func (h UserHandler) GetUserById(c *gin.Context) {
 		}
 	}
 
-	var requestedId UserByIdRequest
-
-	err = json.Unmarshal(req, &requestedId)
-	if err != nil {
-		panic(err)
-	}
-
-	id, err := uuid.Parse(requestedId.Id)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		panic(err)
 	}
@@ -87,8 +67,8 @@ func (h UserHandler) GetUserById(c *gin.Context) {
 	user, err = h.userService.GetUserById(c, id)
 	if err != nil {
 		//TODO:
-		//If id is valid, to check if user exists and throw 404 if so,
-		//instead of just throwing 500
+		// If id is valid, to check if user exists and throw 404 if so,
+		// instead of just throwing 500
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -117,7 +97,7 @@ func (h UserHandler) CreateUser(c *gin.Context) {
 		}
 	}
 
-	var userRequest CreateUserRequest
+	var userRequest UserRequest
 
 	err = json.Unmarshal(req, &userRequest)
 	if err != nil {
@@ -160,17 +140,9 @@ func (h UserHandler) DeleteUser(c *gin.Context) {
 		}
 	}
 
-	var userRequest UserByIdRequest
-
-	err = json.Unmarshal(req, &userRequest)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		panic(err)
-	}
-
-	id, err := uuid.Parse(userRequest.Id)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
 	}
 
 	err = h.userService.DeleteUser(c, id)
@@ -204,17 +176,16 @@ func (h UserHandler) UpdateUser(c *gin.Context) {
 		}
 	}
 
-	var userRequest UpdateUserRequest
+	var userRequest UserRequest
 
-	err = json.Unmarshal(req, &userRequest)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		panic(err)
 	}
 
-	id, err := uuid.Parse(userRequest.Id)
+	err = json.Unmarshal(req, &userRequest)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+		panic(err)
 	}
 
 	var user domain.User
